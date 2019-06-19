@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang = "en">
+
+<head>
+	<link
+		rel = "stylesheet"
+		type = "text/css"
+		href = "style.css"
+	>
+
+	<meta charset = "UTF-8">
+
+	<title>Self-Esteem</title>
+</head>
+
+<body>
+
+<div
+	id = "container"
+	class = "container"
+>
+
+<div class = "inner">
+	<h1>ERROR 404</h1>
+	<h1>SELF-ESTEEM NOT FOUND</h1>
+
+	<label
+		class = "upload__label"
+		for = "upload"
+	>
+
+		START GAME
+
+		<input
+			class = "upload"
+			id = "upload"
+			type = "file"
+		>
+	</label>
+</div>
+
+
+	<!--	dinosaur image-->
+	<div class = "dino">
+
+		<img
+			src = "assets/images/dino.png"
+			alt = "dinosaur image"
+		>
+
+	</div>
+
+</div>
+
+<div class = "image">
+	<img
+		id = "source"
+		src = ""
+	>
+</div>
+
+<script
+	type = "text/javascript"
+	src = "canvas.js"
+></script>
+<script type = "text/javascript">
+	var fileToRead = document.getElementById("upload");
+
+	fileToRead.addEventListener("change", function(evt) {
+
+		var tgt   = evt.target || window.event.srcElement,
+				files = tgt.files;
+
+		if (FileReader && files && files.length) {
+
+			var fr = new FileReader();
+
+			fr.onload = function() {
+
+				var imageElement = document.getElementById("source");
+
+				imageElement.src = fr.result;
+
+				imageHeight = imageElement.height;
+				imageWidth  = imageElement.width;
+
+				var container = document.getElementById("container");
+
+				container.style.display = "none";
+
+				startGame();
+			};
+
+			fr.readAsDataURL(files[0]);
+		}
+	});
+</script>
+</body>
+</html>
