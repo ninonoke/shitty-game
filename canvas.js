@@ -94,7 +94,7 @@ var player = {
 
 		var proportion = image.height / image.width;
 
-		var imageWidth  = 40;
+		var imageWidth  = 80;
 		var imageHeight = imageWidth * proportion;
 
 		gamearea.context.fillstyle = "black";
@@ -117,7 +117,7 @@ var player = {
 
 	crashWith: function(obs) {
 
-		if (this.x + 30 > obs.x && this.x < obs.x + obs.width && this.y + 30 > obs.y) {
+		if (this.x + 80 > obs.x && this.x < obs.x + obs.width && this.y > obs.y) {
 			return true;
 		}
 
