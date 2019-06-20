@@ -23,6 +23,12 @@ var obstacleArr = [
 	{ name: "one", width: 47, height: 80 },
 ];
 
+var handArr = [
+	{ name: "hand-1", width: 200, height: 208 },
+	{ name: "hand-2", width: 69, height: 122 },
+	{ name: "hand-3", width: 204, height: 223 },
+];
+
 var obstacleCount = obstacleArr.length;
 
 var image = document.getElementById("source");
@@ -35,11 +41,13 @@ minHeight = 20;
 maxHeight = 100;
 minWidth  = 10;
 maxWidth  = 10;
-minGap    = 350;
+minGap    = 300;
 maxGap    = 600;
 gap       = randGap();
 
 var myObstacles = [];
+var clouds      = [];
+var hands       = [];
 
 function startGame() {
 	gamearea.start();
@@ -64,8 +72,19 @@ function randGap() {
 	return Math.floor(minGap + Math.random() * (maxGap - minGap + 1));
 }
 
+var scoreText = {
+	x: 50,
+	y: 50,
+
+	update: function(text) {
+		gamearea.context.fillstyle = "gray";
+		gamearea.context.font      = "50px Consolas";
+		gamearea.context.fillText(text, this.x, this.y);
+	}
+};
+
 var player = {
-	x:      20,
+	x:      70,
 	y:      470,
 	speedY: 0,
 
@@ -73,8 +92,10 @@ var player = {
 
 		var proportion = image.height / image.width;
 
-		var imageWidth  = 30;
-		var imageHeight = 30 * proportion;
+		var imageWidth  = 40;
+		var imageHeight = imageWidth * proportion;
+
+		gamearea.context.fillstyle = "black";
 
 		gamearea.context.drawImage(image, this.x, this.y - imageHeight + 30, imageWidth, imageHeight);
 	},
@@ -82,12 +103,12 @@ var player = {
 	newPos: function() {
 
 		if (this.y < 250) {
-			this.speedY = 2;
+			this.speedY = 1.5;
 		}
 
 		this.y = this.y + this.speedY;
 
-		if (this.speedY === 2 && this.y === 470) {
+		if (this.speedY === 1.5 && this.y === 470) {
 			this.speedY = 0;
 		}
 	},
@@ -115,8 +136,46 @@ function Obstacle(data) {
 								: 72;
 	this.x      = canvasWidth;
 	this.y      = gamearea.canvas.height - this.height;
+
 	this.draw   = function() {
+		gamearea.context.fillstyle = "black";
 		gamearea.context.drawImage(img, this.x, this.y, this.width, this.height);
+	};
+}
+
+function Cloud() {
+
+	var cloudImg = document.createElement("img");
+
+	cloudImg.src = "assets/images/cloud.png";
+
+	this.height = 133;
+	this.width  = 206;
+	this.x      = canvasWidth;
+	this.y      = clouds.length % 2 === 0
+								? 96
+								: 48;
+
+	this.draw   = function() {
+		gamearea.context.drawImage(cloudImg, this.x, this.y, this.width, this.height);
+	};
+}
+
+function Hand() {
+
+	var chosenHand = handArr[Math.floor(Math.random() * Math.floor(3))];
+
+	var handImg = document.createElement("img");
+
+	handImg.src = "assets/images/" + chosenHand.name + ".png";
+
+	this.height = chosenHand.height;
+	this.width  = chosenHand.width;
+	this.x      = canvasWidth;
+	this.y      = gamearea.canvas.height - this.height - 24;
+
+	this.draw = function() {
+		gamearea.context.drawImage(handImg, this.x, this.y, this.width, this.height);
 	};
 }
 
@@ -129,8 +188,10 @@ var gamearea = {
 		this.canvas.width  = canvasWidth;
 
 		document.body.insertBefore(this.canvas, document.body.childNodes[0]);
-		this.context  = this.canvas.getContext("2d");
-		this.frame    = 0;
+		this.context = this.canvas.getContext("2d");
+		this.frame   = 0;
+		this.score   = 0;
+		scoreText.update("Score 0");
 		this.interval = setInterval(this.updateGameArea, 5);
 
 		// jumps
@@ -160,17 +221,33 @@ var gamearea = {
 			gamearea.frame = 0;
 
 			obstacleCount++;
+
+			clouds.push(new Cloud());
+			hands.push(new Hand());
 		}
 
 		for (let i = 0; i < myObstacles.length; i++) {
+
+			if (i % 3 === 0) {
+				hands[i].x -= 0.7;
+				hands[i].draw();
+			}
+
 			myObstacles[i].x -= 1;
 			myObstacles[i].draw();
+
+			if (i % 3 === 0) {
+				clouds[i].x -= 0.5;
+				clouds[i].draw();
+			}
 		}
 
 		player.newPos();
 		player.update();
 
 		gamearea.frame += 1;
+		gamearea.score += 0.01;
+		scoreText.update("Score " + Math.floor(gamearea.score));
 	},
 
 	clear: function() {
@@ -185,6 +262,8 @@ var gamearea = {
 			document.body.removeChild(this.canvas);
 
 			myObstacles = [];
+			clouds      = [];
+			hands       = [];
 
 			startGame();
 		}
