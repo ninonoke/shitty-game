@@ -37,6 +37,8 @@ var canvasWidth = window.innerWidth > 1024
 									? window.innerWidth
 									: 1024;
 
+var canvasHeight = 640;
+
 minHeight = 20;
 maxHeight = 100;
 minWidth  = 10;
@@ -85,7 +87,7 @@ var scoreText = {
 
 var player = {
 	x:      70,
-	y:      470,
+	y:      canvasHeight,
 	speedY: 0,
 
 	update: function() {
@@ -97,18 +99,18 @@ var player = {
 
 		gamearea.context.fillstyle = "black";
 
-		gamearea.context.drawImage(image, this.x, this.y - imageHeight + 30, imageWidth, imageHeight);
+		gamearea.context.drawImage(image, this.x, this.y - imageHeight, imageWidth, imageHeight);
 	},
 
 	newPos: function() {
 
-		if (this.y < 250) {
+		if (this.y < canvasHeight - 250) {
 			this.speedY = 1.5;
 		}
 
 		this.y = this.y + this.speedY;
 
-		if (this.speedY === 1.5 && this.y === 470) {
+		if (this.speedY === 1.5 && this.y === canvasHeight) {
 			this.speedY = 0;
 		}
 	},
@@ -137,7 +139,7 @@ function Obstacle(data) {
 	this.x      = canvasWidth;
 	this.y      = gamearea.canvas.height - this.height;
 
-	this.draw   = function() {
+	this.draw = function() {
 		gamearea.context.fillstyle = "black";
 		gamearea.context.drawImage(img, this.x, this.y, this.width, this.height);
 	};
@@ -156,7 +158,7 @@ function Cloud() {
 								? 96
 								: 48;
 
-	this.draw   = function() {
+	this.draw = function() {
 		gamearea.context.drawImage(cloudImg, this.x, this.y, this.width, this.height);
 	};
 }
@@ -184,7 +186,7 @@ var gamearea = {
 	canvas: document.createElement("canvas"),
 
 	start: function() {
-		this.canvas.height = 500;
+		this.canvas.height = canvasHeight;
 		this.canvas.width  = canvasWidth;
 
 		document.body.insertBefore(this.canvas, document.body.childNodes[0]);
